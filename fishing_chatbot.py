@@ -17,7 +17,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://chickensanwich.github.io/Fishermen-chatbot/"],  # Replace with your GitHub Pages URL; use ["*"] for testing (less secure)
+    allow_origins=["*"],  # Use "*" for testing; replace with your GitHub Pages URL (e.g., "https://chickensanwich.github.io/Fishermen-chatbot") in production for security
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -1169,5 +1169,6 @@ async def chat(request: ChatRequest, session: Request):
     })
 
 from fastapi.staticfiles import StaticFiles
+
 
 app.mount("/", StaticFiles(directory=".", html=True), name="static")

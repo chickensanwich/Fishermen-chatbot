@@ -193,12 +193,11 @@ async function sendMessage(message) {
     showTypingIndicator();
     
     try {
-        const response = await fetch("/chat", {
+        const response = await fetch("https://your-service.onrender.com/chat", {  // Replace with your Render URL
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),
         });
-
         if (!response.ok) {
             throw new Error(`Server error ${response.status}`);
         }

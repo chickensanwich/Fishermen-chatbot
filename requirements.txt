@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+neo4j
+pydantic
+googletrans==4.0.0-rc1
+gtts
+difflib
+python-multipart  # If needed for file uploads, but not in your code

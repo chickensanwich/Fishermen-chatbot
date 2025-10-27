@@ -2,7 +2,7 @@
 let loginForm, signupForm, chatForm, feedbackForm;
 let loginContainer, signupContainer, chatContainer, feedbackPopup, overlay;
 let chatMessages, chatInput, chatHistory, newChatBtn, searchChats, userNameDisplay;
-let languageSelect, micBtn, responseAudio;
+let languageSelect, responseAudio, audioPlaybackToggle;
 
 // DOM Elements
 document.addEventListener('DOMContentLoaded', () => {
@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchChats = document.getElementById('search-chats');
     userNameDisplay = document.getElementById('user-name-display');
     languageSelect = document.getElementById('language-select');
-    micBtn = document.getElementById('mic-btn');
     responseAudio = document.getElementById('response-audio');
+    audioPlaybackToggle = document.getElementById('audio-playback');
     
     // Initialize the application
     initApp();
@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (feedbackForm) feedbackForm.addEventListener('submit', handleFeedbackSubmit);
     if (newChatBtn) newChatBtn.addEventListener('click', createNewChat);
     if (searchChats) searchChats.addEventListener('input', searchChatHistory);
-    if (micBtn) micBtn.addEventListener('click', startSpeechRecognition);
     
     // Add event listener for closing feedback popup
     document.addEventListener('click', function(e) {
@@ -193,11 +192,12 @@ async function sendMessage(message) {
     showTypingIndicator();
     
     try {
-        const response = await fetch("https://fishermen-chatbot-backend.onrender.com/chat", {  // Replace with your Render URL
+        const response = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),
         });
+
         if (!response.ok) {
             throw new Error(`Server error ${response.status}`);
         }
@@ -206,8 +206,10 @@ async function sendMessage(message) {
         removeTypingIndicator();
         addMessage(data.reply, 'bot');
         
-        // Handle audio response
-        handleAudioResponse(data);
+        // Handle audio response if toggle is enabled
+        if (audioPlaybackToggle.checked) {
+            handleAudioResponse(data);
+        }
         
         // Save chat to history
         saveChatToHistory(message, data.reply);
@@ -279,33 +281,6 @@ function removeTypingIndicator() {
     if (typingIndicator) {
         typingIndicator.remove();
     }
-}
-
-// Speech Recognition (STT)
-let recognition;
-function startSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-        alert("Speech Recognition not supported in this browser.");
-        return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.lang = languageSelect.value;
-    recognition.interimResults = false;
-
-    recognition.onresult = async (event) => {
-        const transcript = event.results[0][0].transcript;
-        addMessage(transcript, 'user');
-        await sendMessage(transcript);
-    };
-
-    recognition.onerror = (event) => {
-        console.error("Speech Recognition Error:", event.error);
-        alert("Error with speech recognition: " + event.error);
-    };
-
-    recognition.start();
 }
 
 // Text-to-Speech (TTS) for English

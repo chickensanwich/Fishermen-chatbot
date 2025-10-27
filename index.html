@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FisherMen Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container" id="login-container">
+        <div class="form-container">
+            <div class="logo">
+                <img src="assets/fishermen-logo.svg" alt="FisherMen Chatbot Logo">
+                <h1>FisherMen Chatbot</h1>
+            </div>
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-name">Name</label>
+                    <input type="text" id="login-name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-fisherman-id">Fisherman ID</label>
+                    <input type="text" id="login-fisherman-id" placeholder="Enter your Fisherman ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('login-password')">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            <p class="form-footer">Don't have an account? <a href="#" onclick="showSignup()">Sign up</a></p>
+        </div>
+    </div>
+
+    <div class="container hidden" id="signup-container">
+        <div class="form-container">
+            <div class="logo">
+                <img src="assets/fishermen-logo.svg" alt="FisherMen Chatbot Logo">
+                <h1>FisherMen Chatbot</h1>
+            </div>
+            <h2>Sign Up</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-name">Name</label>
+                    <input type="text" id="signup-name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-fisherman-id">Fisherman ID</label>
+                    <input type="text" id="signup-fisherman-id" placeholder="Enter your Fisherman ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-location">Location</label>
+                    <input type="text" id="signup-location" placeholder="Enter your location" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" placeholder="Enter your password" required>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('signup-password')">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm your password" required>
+                    <span class="toggle-password" onclick="togglePasswordVisibility('signup-confirm-password')">
+                        <i class="fas fa-eye"></i>
+                    </span>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+            </form>
+            <p class="form-footer">Already have an account? <a href="#" onclick="showLogin()">Login</a></p>
+        </div>
+    </div>
+
+    <div class="chat-container hidden" id="chat-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="assets/fishermen-logo.svg" alt="FisherMen Chatbot Logo">
+                    <h2>FisherMen Chatbot</h2>
+                </div>
+                <button class="new-chat-btn" id="new-chat-btn">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+            </div>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search chats" id="search-chats">
+                </div>
+            </div>
+            <div class="chat-history" id="chat-history">
+                <!-- Chat history will be populated dynamically -->
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-name" id="user-name-display">User Name</div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="main-chat">
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-message">
+                    <h1>Welcome to FisherMen Chatbot</h1>
+                    <p>How can I assist you today?</p>
+                </div>
+                <!-- Chat messages will be populated dynamically -->
+            </div>
+            <div class="chat-input-container">
+                <form id="chat-form">
+                    <div class="chat-input-box">
+                        <select id="language-select">
+                            <option value="en-US">English</option>
+                            <option value="bn-IN">Bengali</option>
+                        </select>
+                        <textarea id="chat-input" placeholder="Type your message here..." rows="1"></textarea>
+                        <button type="submit" class="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button type="button" class="mic-btn" id="mic-btn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </form>
+                <audio id="response-audio" controls hidden></audio>
+                <p class="disclaimer">FisherMen Chatbot is designed to assist Bangladeshi fishermen with information and guidance.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="feedback-popup hidden" id="feedback-popup">
+        <div class="feedback-content">
+            <h3>What was the issue with this response?</h3>
+            <form id="feedback-form">
+                <div class="feedback-options">
+                    <label class="feedback-option">
+                        <input type="radio" name="feedback" value="incorrect">
+                        <span>Incorrect information</span>
+                    </label>
+                    <label class="feedback-option">
+                        <input type="radio" name="feedback" value="harmful">
+                        <span>Harmful or unsafe content</span>
+                    </label>
+                    <label class="feedback-option">
+                        <input type="radio" name="feedback" value="not-helpful">
+                        <span>Not helpful</span>
+                    </label>
+                    <label class="feedback-option">
+                        <input type="radio" name="feedback" value="other">
+                        <span>Other</span>
+                    </label>
+                </div>
+                <textarea id="feedback-text" placeholder="Additional comments (optional)"></textarea>
+                <div class="feedback-buttons">
+                    <button type="button" class="btn-secondary" onclick="closeFeedbackPopup()">Cancel</button>
+                    <button type="submit" class="btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="overlay hidden" id="overlay"></div>
+    <script src="js/script.js" defer></script>
+</body>
+</html>

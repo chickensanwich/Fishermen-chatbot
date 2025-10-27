@@ -192,7 +192,7 @@ async function sendMessage(message) {
     showTypingIndicator();
     
     try {
-        const response = await fetch("/chat", {
+        const response = await fetch("https://fishermen-chatbot-backend.onrender.com/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),

@@ -23,9 +23,9 @@ for f in old_files:
     os.remove(f)
 
 # Neo4j details
-NEO4J_URI = "bolt://localhost:7687"
+NEO4J_URI = "neo4j+s://faf9224e.databases.neo4j.io"
 NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "nej4nej4"
+NEO4J_PASSWORD = "rXJTlDcO9IOalRVAjZQcwgeFFcIWgmm2oTIdsjc67Ww"
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 # Enhanced session management

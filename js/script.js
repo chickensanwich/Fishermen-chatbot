@@ -4,6 +4,8 @@ let loginContainer, signupContainer, chatContainer, feedbackPopup, overlay;
 let chatMessages, chatInput, chatHistory, newChatBtn, searchChats, userNameDisplay;
 let languageSelect, responseAudio, audioPlaybackToggle;
 
+const BACKEND_URL = 'https://fishermen-chatbot-backend.onrender.com';
+
 // DOM Elements
 document.addEventListener('DOMContentLoaded', () => {
     // Form elements
@@ -192,7 +194,7 @@ async function sendMessage(message) {
     showTypingIndicator();
     
     try {
-        const response = await fetch("/chat", {
+        const response = await fetch(`${BACKEND_URL}/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),
@@ -398,7 +400,7 @@ async function handleFeedbackSubmit(e) {
 
 async function sendFeedback(feedbackData) {
     try {
-        const response = await fetch('/feedback', {
+        const response = await fetch(`${BACKEND_URL}/feedback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

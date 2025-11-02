@@ -2,8 +2,9 @@ fastapi
 uvicorn
 neo4j
 pydantic
-googletrans==4.0.0-rc1
+googletrans==4.0.0-rc1  # Specific version to avoid API changes
 gtts
-
+pymongo
+# Add any other packages, e.g., difflib, random, datetime are built-in so not needed
 
 python-multipart  # If needed for file uploads, but not in your code

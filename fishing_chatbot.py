@@ -11,9 +11,28 @@ from gtts import gTTS
 from fastapi.staticfiles import StaticFiles
 import os
 import glob
+import pymongo
 
 app = FastAPI()
 from fastapi.middleware.cors import CORSMiddleware
+
+MONGODB_URI = "mongodb+srv://chickensandwich_db_user:<db_password>@cluster0.r9uhkfw.mongodb.net/?appName=Cluster0"  # Replace with your actual URI
+client = pymongo.MongoClient(MONGODB_URI)
+db = client["fishermen_chatbot"]
+feedback_collection = db["feedbacks"]
+
+class Feedback(BaseModel):
+    type: str
+    message: str
+    reason: Optional[str] = None
+    comments: Optional[str] = None
+
+@app.post("/feedback")
+async def save_feedback(feedback: Feedback):
+    feedback_dict = feedback.dict()
+    feedback_dict["timestamp"] = datetime.now()
+    feedback_collection.insert_one(feedback_dict)
+    return {"status": "saved"}
 
 app.add_middleware(
     CORSMiddleware,
@@ -1172,3 +1191,13 @@ from fastapi.staticfiles import StaticFiles
 
 
 app.mount("/", StaticFiles(directory=".", html=True), name="static")
+
+@app.get("/admin", response_class=HTMLResponse)
+async def admin_page():
+    with open("admin.html") as f:  # Assume admin.html in same directory
+        return f.read()
+
+@app.get("/feedbacks")
+async def get_feedbacks():
+    feedbacks = list(feedback_collection.find({}, {"_id": 0}))
+    return feedbacks

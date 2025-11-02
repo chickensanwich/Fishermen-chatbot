@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Feedback Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Feedback Reports</h1>
+    <table id="feedback-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Reason</th>
+                <th>Comments</th>
+                <th>Message</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        async function loadFeedbacks() {
+            try {
+                const response = await fetch('/feedbacks');
+                if (!response.ok) throw new Error('Failed to load feedbacks');
+                const feedbacks = await response.json();
+                const tbody = document.querySelector('#feedback-table tbody');
+                tbody.innerHTML = '';
+                feedbacks.forEach(fb => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${fb.type}</td>
+                        <td>${fb.reason || 'N/A'}</td>
+                        <td>${fb.comments || 'N/A'}</td>
+                        <td>${fb.message}</td>
+                        <td>${new Date(fb.timestamp).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                alert('Failed to load feedbacks');
+            }
+        }
+        loadFeedbacks();
+    </script>
+</body>
+</html>

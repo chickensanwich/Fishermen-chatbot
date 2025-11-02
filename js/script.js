@@ -192,7 +192,7 @@ async function sendMessage(message) {
     showTypingIndicator();
     
     try {
-        const response = await fetch("https://fishermen-chatbot-backend.onrender.com/chat", {
+        const response = await fetch("/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message }),
@@ -323,7 +323,7 @@ function handleAudioResponse(data) {
 }
 
 // Feedback Functions
-function handleFeedback(messageDiv, isPositive) {
+async function handleFeedback(messageDiv, isPositive) {
     const thumbsUp = messageDiv.querySelector('.thumbs-up');
     const thumbsDown = messageDiv.querySelector('.thumbs-down');
     
@@ -331,17 +331,25 @@ function handleFeedback(messageDiv, isPositive) {
     thumbsUp.classList.remove('active', 'thumbs-up-animation');
     thumbsDown.classList.remove('active', 'thumbs-down-animation');
     
+    const reportedMessage = messageDiv.querySelector('.message-content').textContent;
+    
     if (isPositive) {
         // Thumbs up was clicked
         thumbsUp.classList.add('active', 'thumbs-up-animation');
         thumbsUp.style.color = 'var(--secondary-color)';
+        
+        // Send positive feedback to server
+        await sendFeedback({
+            type: 'positive',
+            message: reportedMessage
+        });
     } else {
         // Thumbs down was clicked
         thumbsDown.classList.add('active', 'thumbs-down-animation');
         thumbsDown.style.color = 'var(--danger-color)';
         
         // Show feedback popup
-        showFeedbackPopup(messageDiv.querySelector('.message-content').textContent);
+        showFeedbackPopup(reportedMessage);
     }
 }
 
@@ -363,7 +371,7 @@ function closeFeedbackPopup() {
     document.getElementById('feedback-form').reset();
 }
 
-function handleFeedbackSubmit(e) {
+async function handleFeedbackSubmit(e) {
     e.preventDefault();
     
     // Get selected feedback option
@@ -371,18 +379,43 @@ function handleFeedbackSubmit(e) {
     const feedbackText = document.getElementById('feedback-text').value;
     const reportedMessage = feedbackPopup.dataset.reportedMessage;
     
-    // In a real application, you would send this feedback to a server
-    console.log('Feedback submitted:', {
-        message: reportedMessage,
+    const feedbackData = {
+        type: 'negative',
         reason: feedbackOption ? feedbackOption.value : 'not specified',
-        additionalComments: feedbackText
-    });
+        comments: feedbackText,
+        message: reportedMessage
+    };
+    
+    // Send feedback to server
+    await sendFeedback(feedbackData);
     
     // Close popup
     closeFeedbackPopup();
     
     // Show thank you message
     alert('Thank you for your feedback!');
+}
+
+async function sendFeedback(feedbackData) {
+    try {
+        const response = await fetch('/feedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(feedbackData),
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to save feedback');
+        }
+        
+        console.log('Feedback saved successfully');
+    } catch (error) {
+        console.error('Error saving feedback:', error);
+        // Optionally show error to user
+        // alert('Failed to save feedback. Please try again.');
+    }
 }
 
 // Chat History Functions

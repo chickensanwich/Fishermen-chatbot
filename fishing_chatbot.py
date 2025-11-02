@@ -16,7 +16,7 @@ import pymongo
 app = FastAPI()
 from fastapi.middleware.cors import CORSMiddleware
 
-MONGODB_URI = "mongodb+srv://chickensandwich_db_user:<UomKXVwHev5y3MTW>@cluster0.r9uhkfw.mongodb.net/?appName=Cluster0"  # Replace with your actual URI
+MONGODB_URI = os.getenv("MONGODB_URI")  # Loads from Render env var
 client = pymongo.MongoClient(MONGODB_URI)
 db = client["fishermen_chatbot"]
 feedback_collection = db["feedbacks"]

@@ -16,7 +16,7 @@ import pymongo
 app = FastAPI()
 from fastapi.middleware.cors import CORSMiddleware
 
-MONGODB_URI = "mongodb+srv://chickensandwich_db_user:<db_password>@cluster0.r9uhkfw.mongodb.net/?appName=Cluster0"  # Replace with your actual URI
+MONGODB_URI = "mongodb+srv://chickensandwich_db_user:<FIMMxaJHZlt5yxk9>@cluster0.r9uhkfw.mongodb.net/?appName=Cluster0"  # Replace with your actual URI
 client = pymongo.MongoClient(MONGODB_URI)
 db = client["fishermen_chatbot"]
 feedback_collection = db["feedbacks"]

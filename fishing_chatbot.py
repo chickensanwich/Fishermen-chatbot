@@ -1199,5 +1199,5 @@ async def admin_page():
 
 @app.get("/feedbacks")
 async def get_feedbacks():
-    feedbacks = list(feedback_collection.find({}, {"_id": 0}))
+    feedbacks = list(feedback_collection.find({}, {"_id": 0}))  # Exclude MongoDB _id
     return feedbacks

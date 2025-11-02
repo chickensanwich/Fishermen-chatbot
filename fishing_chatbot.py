@@ -1199,5 +1199,8 @@ async def admin_page():
 
 @app.get("/feedbacks")
 async def get_feedbacks():
-    feedbacks = list(feedback_collection.find({}, {"_id": 0}))  # Exclude MongoDB _id
-    return feedbacks
+    try:
+        feedbacks = list(feedback_collection.find({}, {"_id": 0}))  # Fetch all, exclude ObjectId
+        return feedbacks
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))  # For error handling

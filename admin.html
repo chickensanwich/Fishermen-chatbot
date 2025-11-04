@@ -28,8 +28,8 @@
     <script>
         async function loadFeedbacks() {
     try {
-        const response = await fetch('https://fishermen-chatbot-backend.onrender.com/feedbacks');
-        if (!response.ok) throw new Error('Failed to load feedbacks');
+        const response = await fetch('/feedbacks');  // Changed to relative URL for same-origin fetch
+        if (!response.ok) throw new Error(`Failed to load feedbacks: ${response.status} ${response.statusText}`);
         const feedbacks = await response.json();
         const tbody = document.querySelector('#feedback-table tbody');
         tbody.innerHTML = '';
@@ -46,7 +46,7 @@
         });
     } catch (error) {
         console.error('Error loading feedbacks:', error);
-        alert('Failed to load feedbacks');
+        alert(`Failed to load feedbacks: ${error.message}`);  // Improved error alerting for debugging
     }
 }
 loadFeedbacks();

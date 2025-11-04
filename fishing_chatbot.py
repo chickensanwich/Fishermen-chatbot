@@ -1147,6 +1147,10 @@ def process_conversation(message: str, session_id: str) -> str:
     return response
 translator = Translator()
 
+# ... (all previous code remains the same, up to the translator and @app.post("/chat"))
+
+translator = Translator()
+
 @app.post("/chat")
 async def chat(request: ChatRequest, session: Request):
     session_id = session.client.host
@@ -1189,9 +1193,7 @@ async def chat(request: ChatRequest, session: Request):
 
 from fastapi.staticfiles import StaticFiles
 
-
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
-
+# Specific routes must come BEFORE the catch-all static mount
 @app.get("/admin", response_class=HTMLResponse)
 async def admin_page():
     with open("admin.html") as f:  # Assume admin.html in same directory
@@ -1204,3 +1206,6 @@ async def get_feedbacks():
         return feedbacks
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))  # For error handling
+
+# Now the catch-all static mount (this serves index.html and other frontend files)
+app.mount("/", StaticFiles(directory=".", html=True), name="static")

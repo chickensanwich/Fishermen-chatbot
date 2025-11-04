@@ -46,7 +46,7 @@
         });
     } catch (error) {
         console.error('Error loading feedbacks:', error);
-        alert(`Failed to load feedbacks: ${error.message}`);
+        alert(`Failed to load feedbacks: ${error.message}. Check if the backend is running and MongoDB is connected.`);
     }
 }
 loadFeedbacks();

@@ -7,7 +7,6 @@ from difflib import SequenceMatcher
 import random
 from datetime import datetime
 from googletrans import Translator
-from gtts import gTTS
 from fastapi.staticfiles import StaticFiles
 import os
 import glob
@@ -42,13 +41,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # Create directory to store audio responses
-os.makedirs("tts_audio", exist_ok=True)
-app.mount("/tts_audio", StaticFiles(directory="tts_audio"), name="tts_audio")
+
 
 # Delete old files (older than 5 files)
-old_files = sorted(glob.glob("tts_audio/*.mp3"))[:-5]
-for f in old_files:
-    os.remove(f)
 
 # Neo4j details
 NEO4J_URI = "neo4j+s://faf9224e.databases.neo4j.io"
@@ -1178,13 +1173,6 @@ async def chat(request: ChatRequest, session: Request):
         reply_lang = "en"
 
     # Generate TTS if Bengali
-    audio_path = None
-    if reply_lang == "bn":
-        tts = gTTS(reply_text, lang="bn")
-        filename = f"tts_audio/reply_{session_id}_{int(datetime.now().timestamp())}.mp3"
-        tts.save(filename)
-        audio_path = f"/tts_audio/{os.path.basename(filename)}"
-
     return JSONResponse({
         "reply": reply_text,
         "audio_url": audio_path,
@@ -1206,6 +1194,45 @@ async def get_feedbacks():
         return feedbacks
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))  # For error handling
+    
+@app.get("/graph")
+async def get_graph():
+    try:
+        def fetch_graph(tx):
+            result = tx.run("MATCH (n)-[r]->(m) RETURN n, r, m")
+            nodes = {}
+            edges = []
+            for record in result:
+                n = record["n"]
+                m = record["m"]
+                r = record["r"]
+                
+                n_id = n.id
+                if n_id not in nodes:
+                    nodes[n_id] = {
+                        "id": n_id,
+                        "label": n.get("name", "") or list(n.labels)[0] if n.labels else "Node"
+                    }
+                
+                m_id = m.id
+                if m_id not in nodes:
+                    nodes[m_id] = {
+                        "id": m_id,
+                        "label": m.get("name", "") or list(m.labels)[0] if m.labels else "Node"
+                    }
+                
+                edges.append({
+                    "from": n_id,
+                    "to": m_id,
+                    "label": r.type
+                })
+            return {"nodes": list(nodes.values()), "edges": edges}
+        
+        with driver.session() as session:
+            graph_data = session.execute_read(fetch_graph)
+        return graph_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Now the catch-all static mount (this serves index.html and other frontend files)
 app.mount("/", StaticFiles(directory=".", html=True), name="static")

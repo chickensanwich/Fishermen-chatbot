@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Feedback Dashboard</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+        #graph-network { width: 100%; height: 600px; border: 1px solid #ddd; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -25,31 +27,60 @@
         </thead>
         <tbody></tbody>
     </table>
+    
+    <h1>Knowledge Graph</h1>
+    <div id="graph-network"></div>
+    
     <script>
         async function loadFeedbacks() {
-    try {
-        const response = await fetch('https://fishermen-chatbot-backend.onrender.com/feedbacks');
-        if (!response.ok) throw new Error(`Failed to load feedbacks: ${response.status} ${response.statusText}`);
-        const feedbacks = await response.json();
-        const tbody = document.querySelector('#feedback-table tbody');
-        tbody.innerHTML = '';
-        feedbacks.forEach(fb => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${fb.type}</td>
-                <td>${fb.reason || 'N/A'}</td>
-                <td>${fb.comments || 'N/A'}</td>
-                <td>${fb.message}</td>
-                <td>${new Date(fb.timestamp).toLocaleString()}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    } catch (error) {
-        console.error('Error loading feedbacks:', error);
-        alert(`Failed to load feedbacks: ${error.message}. Check if the backend is running and MongoDB is connected.`);
-    }
-}
-loadFeedbacks();
+            try {
+                const response = await fetch('https://fishermen-chatbot-backend.onrender.com/feedbacks');
+                if (!response.ok) throw new Error(`Failed to load feedbacks: ${response.status} ${response.statusText}`);
+                const feedbacks = await response.json();
+                const tbody = document.querySelector('#feedback-table tbody');
+                tbody.innerHTML = '';
+                feedbacks.forEach(fb => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${fb.type}</td>
+                        <td>${fb.reason || 'N/A'}</td>
+                        <td>${fb.comments || 'N/A'}</td>
+                        <td>${fb.message}</td>
+                        <td>${new Date(fb.timestamp).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                alert(`Failed to load feedbacks: ${error.message}`);
+            }
+        }
+
+        async function loadGraph() {
+            try {
+                const response = await fetch('https://fishermen-chatbot-backend.onrender.com/graph');
+                if (!response.ok) throw new Error(`Failed to load graph: ${response.status} ${response.statusText}`);
+                const data = await response.json();
+                
+                const container = document.getElementById('graph-network');
+                const graphData = {
+                    nodes: new vis.DataSet(data.nodes),
+                    edges: new vis.DataSet(data.edges)
+                };
+                const options = {
+                    nodes: { shape: 'dot', size: 16 },
+                    edges: { arrows: 'to' },
+                    physics: { enabled: true }
+                };
+                new vis.Network(container, graphData, options);
+            } catch (error) {
+                console.error('Error loading graph:', error);
+                alert(`Failed to load graph: ${error.message}`);
+            }
+        }
+
+        loadFeedbacks();
+        loadGraph();
     </script>
 </body>
 </html>

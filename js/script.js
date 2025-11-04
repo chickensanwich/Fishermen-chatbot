@@ -2,7 +2,7 @@
 let loginForm, signupForm, chatForm, feedbackForm;
 let loginContainer, signupContainer, chatContainer, feedbackPopup, overlay;
 let chatMessages, chatInput, chatHistory, newChatBtn, searchChats, userNameDisplay;
-let languageSelect, responseAudio, audioPlaybackToggle;
+let languageSelect;
 
 const BACKEND_URL = 'https://fishermen-chatbot-backend.onrender.com';
 
@@ -29,8 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     searchChats = document.getElementById('search-chats');
     userNameDisplay = document.getElementById('user-name-display');
     languageSelect = document.getElementById('language-select');
-    responseAudio = document.getElementById('response-audio');
-    audioPlaybackToggle = document.getElementById('audio-playback');
     
     // Initialize the application
     initApp();
@@ -209,9 +207,6 @@ async function sendMessage(message) {
         addMessage(data.reply, 'bot');
         
         // Handle audio response if toggle is enabled
-        if (audioPlaybackToggle.checked) {
-            handleAudioResponse(data);
-        }
         
         // Save chat to history
         saveChatToHistory(message, data.reply);
@@ -286,43 +281,9 @@ function removeTypingIndicator() {
 }
 
 // Text-to-Speech (TTS) for English
-function speak(text, lang) {
-    if (!("speechSynthesis" in window)) {
-        console.warn("Speech Synthesis not supported in this browser.");
-        return;
-    }
 
-    const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 1;
-
-    // Wait for voices
-    let voices = synth.getVoices();
-    if (voices.length === 0) {
-        synth.onvoiceschanged = () => speak(text, lang);
-        return;
-    }
-
-    const matchVoice = voices.find(v => v.lang.startsWith(lang.split('-')[0])) || voices[0];
-    utterance.voice = matchVoice;
-
-    synth.cancel(); // Cancel any ongoing speech
-    synth.speak(utterance);
-}
 
 // Handle Audio Response from Server
-function handleAudioResponse(data) {
-    if (data.audio_url) {
-        // For Bengali: Play server-generated audio
-        responseAudio.src = data.audio_url;
-        responseAudio.load();
-        responseAudio.play().catch(err => console.warn("Autoplay blocked:", err));
-    } else if (data.lang === "en") {
-        // For English: Use browser TTS
-        speak(data.reply, languageSelect.value);
-    }
-}
 
 // Feedback Functions
 async function handleFeedback(messageDiv, isPositive) {

@@ -20,25 +20,19 @@
                 <th>Reason</th>
                 <th>Comments</th>
                 <th>Message</th>
+                <th>Knowledge Graph Nodes and Relations</th>
                 <th>Timestamp</th>
             </tr>
         </thead>
         <tbody></tbody>
     </table>
     
-    <h1>Knowledge Graph Nodes and Relations</h1>
-    <table id="graph-table">
-        <thead>
-            <tr>
-                <th>From Node</th>
-                <th>Relation</th>
-                <th>To Node</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-    
     <script>
+        function formatGraph(graph) {
+            if (!graph || !Array.isArray(graph)) return 'N/A';
+            return graph.map(edge => `${edge.from || 'Unknown'} - ${edge.relation || 'REL'} -> ${edge.to || 'Unknown'}`).join('<br>');
+        }
+
         async function loadFeedbacks() {
             try {
                 const response = await fetch('https://fishermen-chatbot-backend.onrender.com/feedbacks');
@@ -53,6 +47,7 @@
                         <td>${fb.reason || 'N/A'}</td>
                         <td>${fb.comments || 'N/A'}</td>
                         <td>${fb.message}</td>
+                        <td>${formatGraph(fb.graph) || 'N/A'}</td>
                         <td>${new Date(fb.timestamp).toLocaleString()}</td>
                     `;
                     tbody.appendChild(tr);
@@ -63,38 +58,7 @@
             }
         }
 
-        async function loadGraph() {
-            try {
-                const response = await fetch('https://fishermen-chatbot-backend.onrender.com/graph');
-                if (!response.ok) throw new Error(`Failed to load graph: ${response.status} ${response.statusText}`);
-                const data = await response.json();
-                
-                // Create a map of node ids to labels for easy lookup
-                const nodeMap = {};
-                data.nodes.forEach(node => {
-                    nodeMap[node.id] = node.label;
-                });
-                
-                // Populate the graph table with edges
-                const tbody = document.querySelector('#graph-table tbody');
-                tbody.innerHTML = '';
-                data.edges.forEach(edge => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${nodeMap[edge.from] || edge.from}</td>
-                        <td>${edge.label}</td>
-                        <td>${nodeMap[edge.to] || edge.to}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (error) {
-                console.error('Error loading graph:', error);
-                alert(`Failed to load graph: ${error.message}`);
-            }
-        }
-
         loadFeedbacks();
-        loadGraph();
     </script>
 </body>
 </html>

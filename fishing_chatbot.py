@@ -1175,7 +1175,6 @@ async def chat(request: ChatRequest, session: Request):
     # Generate TTS if Bengali
     return JSONResponse({
         "reply": reply_text,
-        "audio_url": audio_path,
         "lang": reply_lang
     })
 

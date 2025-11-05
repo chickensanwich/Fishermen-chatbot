@@ -47,7 +47,6 @@
                         <td>${fb.reason || 'N/A'}</td>
                         <td>${fb.comments || 'N/A'}</td>
                         <td>${fb.message}</td>
-                        <td>${formatGraph(fb.graph) || 'N/A'}</td>
                         <td>${new Date(fb.timestamp).toLocaleString()}</td>
                     `;
                     tbody.appendChild(tr);
@@ -61,4 +60,5 @@
         loadFeedbacks();
     </script>
 </body>
+
 </html>
